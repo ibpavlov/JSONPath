@@ -11,6 +11,8 @@ class JSONPathLexer
      */
     const MATCH_INDEX        = '-?\w+ | \*'; // Eg. foo
     const MATCH_INDEXES      = '\s* -?\d+ [-?\d,\s]+'; // Eg. 0,1,2
+    const MATCH_COLUMN_INDEXES      = '\s* \:-?[\da-zA-Z\_\-]+ [-?\da-zA-Z\_\-,\s]+'; // Eg. title,name,field without the keys
+    const MATCH_STRING_INDEXES      = '\s* -?[\da-zA-Z\_\-]+ [-?\da-zA-Z\_\-,\s]+'; // Eg. title,name,field
     const MATCH_SLICE        = '[-\d:]+ | :'; // Eg. [0:2:1]
     const MATCH_QUERY_RESULT = '\s* \( .+? \) \s*'; // Eg. ?(@.length - 1)
     const MATCH_QUERY_MATCH  = '\s* \?\(.+?\) \s*'; // Eg. ?(@.foo = "bar")
@@ -51,6 +53,10 @@ class JSONPathLexer
         $this->expressionLength = strlen($expression);
     }
 
+    /**
+     * @return array
+     * @throws JSONPathException
+     */
     public function parseExpressionTokens()
     {
         $dotIndexDepth = 0;
@@ -152,6 +158,7 @@ class JSONPathLexer
     /**
      * @param $value
      * @return string
+     * @throws JSONPathException
      */
     protected function createToken($value)
     {
@@ -170,6 +177,26 @@ class JSONPathLexer
             }
 
             return new JSONPathToken(JSONPathToken::T_INDEXES, $value);
+        }
+
+        if (preg_match('/^' . static::MATCH_COLUMN_INDEXES . '$/x', $value, $matches)) {
+            $value = explode(',', trim($value, ','));
+
+            foreach ($value as $i => $v) {
+                $value[$i] = trim($v);
+            }
+
+            return new JSONPathToken(JSONPathToken::T_COLUMN_INDEXES, $value);
+        }
+
+        if (preg_match('/^' . static::MATCH_STRING_INDEXES . '$/x', $value, $matches)) {
+            $value = explode(',', trim($value, ','));
+
+            foreach ($value as $i => $v) {
+                $value[$i] = trim($v);
+            }
+
+            return new JSONPathToken(JSONPathToken::T_STRING_INDEXES, $value);
         }
 
         if (preg_match('/^' . static::MATCH_SLICE . '$/x', $value, $matches)) {

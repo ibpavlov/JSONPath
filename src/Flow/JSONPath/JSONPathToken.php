@@ -14,12 +14,14 @@ class JSONPathToken
     /*
      * Tokens
      */
-    const T_INDEX        = 'index';
-    const T_RECURSIVE    = 'recursive';
-    const T_QUERY_RESULT = 'queryResult';
-    const T_QUERY_MATCH  = 'queryMatch';
-    const T_SLICE        = 'slice';
-    const T_INDEXES      = 'indexes';
+    const T_INDEX           = 'index';
+    const T_RECURSIVE       = 'recursive';
+    const T_QUERY_RESULT    = 'queryResult';
+    const T_QUERY_MATCH     = 'queryMatch';
+    const T_SLICE           = 'slice';
+    const T_INDEXES         = 'indexes';
+    const T_STRING_INDEXES  = 'stringIndexes';
+    const T_COLUMN_INDEXES  = 'columnIndexes';
 
     public $type;
     public $value;
@@ -32,6 +34,10 @@ class JSONPathToken
         $this->value = $value;
     }
 
+    /**
+     * @param $type
+     * @throws JSONPathException
+     */
     public function validateType($type)
     {
         if (!in_array($type, static::getTypes(), true)) {
@@ -39,6 +45,9 @@ class JSONPathToken
         }
     }
 
+    /**
+     * @return array
+     */
     public static function getTypes()
     {
         return [
@@ -48,6 +57,8 @@ class JSONPathToken
             static::T_QUERY_MATCH,
             static::T_SLICE,
             static::T_INDEXES,
+            static::T_STRING_INDEXES,
+            static::T_COLUMN_INDEXES
         ];
     }
 
