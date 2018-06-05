@@ -180,7 +180,7 @@ class JSONPathLexer
         }
 
         if (preg_match('/^' . static::MATCH_COLUMN_INDEXES . '$/x', $value, $matches)) {
-            $value = explode(',', trim($value, ','));
+            $value = explode(',', trim($value, ',:'));
 
             foreach ($value as $i => $v) {
                 $value[$i] = trim($v);
